@@ -394,60 +394,7 @@ async def help(interaction: discord.Interaction):
     embed.set_footer(text=f"Requested by {interaction.user.name} | Total: 500+ commands")
     await interaction.response.send_message(embed=embed)
 
-# ==================== INFORMATION COMMANDS (20) ====================
-@tree.command(name="ping", description="Check bot latency")
-async def ping(interaction: discord.Interaction):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    await interaction.response.send_message(f'🏓 Pong! Latency: `{round(bot.latency*1000)}ms`')
-
-@tree.command(name="uptime", description="Check bot uptime")
-async def uptime(interaction: discord.Interaction):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    now = datetime.datetime.now()
-    uptime = now - bot.start_time if hasattr(bot, 'start_time') else datetime.timedelta(seconds=0)
-    days, remainder = divmod(int(uptime.total_seconds()), 86400)
-    hours, remainder = divmod(remainder, 3600)
-    minutes, seconds = divmod(remainder, 60)
-    await interaction.response.send_message(f"⏱️ Uptime: **{days}d {hours}h {minutes}m {seconds}s**")
-
-@tree.command(name="info", description="Bot information")
-async def info(interaction: discord.Interaction):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    embed = discord.Embed(title="🤖 Bot Info", color=discord.Color.blue())
-    embed.add_field(name="Name", value=bot.user.name, inline=True)
-    embed.add_field(name="Servers", value=len(bot.guilds), inline=True)
-    embed.add_field(name="Users", value=len(bot.users), inline=True)
-    embed.add_field(name="Commands", value="500+", inline=True)
-    embed.add_field(name="Latency", value=f"{round(bot.latency*1000)}ms", inline=True)
-    embed.set_thumbnail(url=bot.user.avatar.url if bot.user.avatar else None)
-    await interaction.response.send_message(embed=embed)
-
-@tree.command(name="botinfo", description="Detailed bot statistics")
-async def botinfo(interaction: discord.Interaction):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    embed = discord.Embed(title="📊 Bot Statistics", color=discord.Color.purple())
-    embed.add_field(name="Name", value=bot.user.name, inline=True)
-    embed.add_field(name="ID", value=bot.user.id, inline=True)
-    embed.add_field(name="Created", value=bot.user.created_at.strftime("%Y-%m-%d"), inline=True)
-    embed.add_field(name="Servers", value=len(bot.guilds), inline=True)
-    embed.add_field(name="Users", value=len(bot.users), inline=True)
-    embed.add_field(name="Ping", value=f"{round(bot.latency*1000)}ms", inline=True)
-    embed.add_field(name="Commands", value="500+", inline=True)
-    embed.add_field(name="Python", value="3.13", inline=True)
-    embed.add_field(name="discord.py", value="2.5+", inline=True)
-    await interaction.response.send_message(embed=embed)
-
-# ==================== MORE COMMANDS (FUN, ECONOMY, MODERATION, LEVELING, UTILITY, ADMIN, OWNER) ====================
-
-# FUN COMMANDS
+# ==================== FUN COMMANDS ====================
 @tree.command(name="flip", description="Flip a coin")
 async def flip(interaction: discord.Interaction):
     if not has_minimum_role(interaction):
@@ -503,141 +450,9 @@ async def rps(interaction: discord.Interaction, choice: str):
         result = "I win! 😎"
     await interaction.response.send_message(f"🧱 You chose {choice}\n🤖 I chose {bot_choice}\n\n{result}")
 
-@tree.command(name="math", description="Calculate math")
-async def math(interaction: discord.Interaction, num1: float, operator: str, num2: float):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    ops = {"+": lambda a,b: a+b, "-": lambda a,b: a-b, "*": lambda a,b: a*b, "/": lambda a,b: a/b if b else None, "^": lambda a,b: a**b, "%": lambda a,b: a%b if b else None}
-    if operator not in ops:
-        await interaction.response.send_message("❌ Use + - * / ^ %", ephemeral=True)
-        return
-    result = ops[operator](num1, num2)
-    if result is None:
-        await interaction.response.send_message("❌ Cannot divide/mod by zero!", ephemeral=True)
-        return
-    await interaction.response.send_message(f"🧮 `{num1} {operator} {num2} = {result}`")
+# ==================== MORE COMMANDS (ECONOMY, MODERATION, LEVELING, UTILITY, ADMIN, OWNER) ====================
 
-@tree.command(name="8ball", description="Ask the magic 8-ball")
-async def eightball(interaction: discord.Interaction, question: str):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    responses = ["It is certain 🎱", "It is decidedly so 🎱", "Without a doubt 🎱", "Yes definitely 🎱", "You may rely on it 🎱", "As I see it, yes 🎱", "Most likely 🎱", "Outlook good 🎱", "Yes 🎱", "Signs point to yes 🎱", "Reply hazy, try again 🎱", "Ask again later 🎱", "Better not tell you now 🎱", "Cannot predict now 🎱", "Concentrate and ask again 🎱", "Don't count on it 🎱", "My reply is no 🎱", "My sources say no 🎱", "Outlook not so good 🎱", "Very doubtful 🎱"]
-    await interaction.response.send_message(f"🎱 Question: *{question}*\n\n**{random.choice(responses)}**")
-
-@tree.command(name="fact", description="Random fact")
-async def fact(interaction: discord.Interaction):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    facts = ["Honey never spoils 🍯", "Octopuses have three hearts 🐙", "Bananas are berries 🍌", "A day on Venus is longer than a year 🪐", "Cows have best friends 🐄", "A group of flamingos is called a flamboyance 🦩", "The shortest war was 38 minutes ⚔️", "Bamboo can grow up to 3 feet in a day 🎋"]
-    await interaction.response.send_message(f"💡 **{random.choice(facts)}**")
-
-@tree.command(name="joke", description="Random joke")
-async def joke(interaction: discord.Interaction):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    jokes = ["Why don't scientists trust atoms? Because they make up everything! ⚛️", "What do you call a fish with no eyes? A fsh! 🐟", "Why did the scarecrow win an award? He was outstanding in his field! 🌾", "What do you call a bear with no teeth? A gummy bear! 🧸", "Why don't skeletons fight each other? They don't have the guts! 💀"]
-    await interaction.response.send_message(f"😂 {random.choice(jokes)}")
-
-@tree.command(name="meme", description="Random meme")
-async def meme(interaction: discord.Interaction):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    try:
-        resp = requests.get("https://meme-api.com/gimme")
-        if resp.status_code == 200:
-            data = resp.json()
-            embed = discord.Embed(title=data['title'], color=discord.Color.random())
-            embed.set_image(url=data['url'])
-            embed.set_footer(text=f"👍 {data['ups']} | r/{data['subreddit']}")
-            await interaction.response.send_message(embed=embed)
-        else:
-            await interaction.response.send_message("❌ Could not fetch meme")
-    except:
-        await interaction.response.send_message("❌ API error")
-
-@tree.command(name="cat", description="Random cat picture")
-async def cat(interaction: discord.Interaction):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return    try:
-        resp = requests.get("https://api.thecatapi.com/v1/images/search")
-        if resp.status_code == 200:
-            data = resp.json()
-            embed = discord.Embed(title="🐱 Meow!", color=discord.Color.random())
-            embed.set_image(url=data[0]['url'])
-            await interaction.response.send_message(embed=embed)
-        else:
-            await interaction.response.send_message("❌ Could not fetch cat")
-    except:
-        await interaction.response.send_message("❌ API error")
-
-@tree.command(name="dog", description="Random dog picture")
-async def dog(interaction: discord.Interaction):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    try:
-        resp = requests.get("https://api.thedogapi.com/v1/images/search")
-        if resp.status_code == 200:
-            data = resp.json()
-            embed = discord.Embed(title="🐶 Woof!", color=discord.Color.random())
-            embed.set_image(url=data[0]['url'])
-            await interaction.response.send_message(embed=embed)
-        else:
-            await interaction.response.send_message("❌ Could not fetch dog")
-    except:
-        await interaction.response.send_message("❌ API error")
-
-# SHIP, ROAST, COMPLIMENT, INSULT
-@tree.command(name="ship", description="Ship two users")
-async def ship(interaction: discord.Interaction, user1: discord.Member, user2: discord.Member):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    compatibility = random.randint(0, 100)
-    hearts = "❤️" * (compatibility // 10) + "🖤" * (10 - compatibility // 10)
-    embed = discord.Embed(title="💕 Ship Rating", color=discord.Color.pink())
-    embed.add_field(name=f"{user1.name} ❤️ {user2.name}", value=f"**{compatibility}%**\n{hearts}", inline=False)
-    if compatibility > 80:
-        embed.add_field(name="💖", value="Perfect match! Soulmates!", inline=False)
-    elif compatibility > 60:
-        embed.add_field(name="💗", value="Great match!", inline=False)
-    elif compatibility > 40:
-        embed.add_field(name="💛", value="Good match!", inline=False)
-    else:
-        embed.add_field(name="💔", value="Not a good match!", inline=False)
-    await interaction.response.send_message(embed=embed)
-
-@tree.command(name="roast", description="Roast someone")
-async def roast(interaction: discord.Interaction, member: discord.Member):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    roasts = ["You're proof that evolution can go in reverse.", "You're like a cloud. When you disappear, it's a beautiful day.", "You're not stupid; you just have bad luck thinking.", "You're the reason the gene pool needs a lifeguard.", "You're so fake, China is less fake than you.", "You're like a software update. I see you, but I ignore you.", "You're not a clown, you're the entire circus.", "You're so ugly, when you were born, the doctor slapped your parents."]
-    await interaction.response.send_message(f"🔥 {member.mention}, {random.choice(roasts)}")
-
-@tree.command(name="compliment", description="Give a compliment")
-async def compliment(interaction: discord.Interaction, member: discord.Member):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    compliments = ["You're amazing! 🌟", "You're a shining star! ✨", "You're absolutely incredible! 💫", "You're one of a kind! 💎", "You're a blessing to this world! 🙏", "You're so talented! 🎨", "You're a legend! 🏆", "You're unstoppable! 💪", "You're the best! 🥇", "You're a masterpiece! 🎭"]
-    await interaction.response.send_message(f"💖 {member.mention}, {random.choice(compliments)}")
-
-@tree.command(name="insult", description="Insult someone")
-async def insult(interaction: discord.Interaction, member: discord.Member):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    insults = ["You're as useful as a screen door on a submarine.", "You're so boring, you make paint dry look exciting.", "You're like a cloud. When you disappear, it's a beautiful day.", "You're the human equivalent of a participation trophy.", "You're so full of yourself, you're a walking selfie stick.", "You're like a software update. I see you, but I ignore you."]
-    await interaction.response.send_message(f"😤 {member.mention}, {random.choice(insults)}")
-
-# ==================== ECONOMY COMMANDS ====================
+# ECONOMY
 @tree.command(name="balance", description="Check your balance")
 async def balance(interaction: discord.Interaction, member: discord.Member = None):
     if not has_minimum_role(interaction):
@@ -663,25 +478,6 @@ async def daily(interaction: discord.Interaction):
     reward = random.randint(50, 200)
     data['balance'] += reward
     data['last_daily'] = now
-    add_achievement(user_id, "Daily Collector")
-    await interaction.response.send_message(f"✅ You got **{reward}** coins!")
-
-@tree.command(name="weekly", description="Claim weekly reward")
-async def weekly(interaction: discord.Interaction):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    user_id = str(interaction.user.id)
-    data = get_user(user_id)
-    now = datetime.datetime.now().timestamp()
-    if now - data.get('last_weekly', 0) < 604800:
-        days = int((604800 - (now - data.get('last_weekly', 0))) / 86400) + 1
-        await interaction.response.send_message(f"⏰ Already claimed, come back in {days}d", ephemeral=True)
-        return
-    reward = random.randint(500, 1000)
-    data['balance'] += reward
-    data['last_weekly'] = now
-    add_achievement(user_id, "Weekly Warrior")
     await interaction.response.send_message(f"✅ You got **{reward}** coins!")
 
 @tree.command(name="work", description="Work for coins")
@@ -737,77 +533,7 @@ async def inventory(interaction: discord.Interaction, member: discord.Member = N
         return
     await interaction.response.send_message(f"📦 **{member.name}'s inventory:**\n" + "\n".join(f"• {i}" for i in data['inventory']))
 
-@tree.command(name="gamble", description="Gamble your coins")
-async def gamble(interaction: discord.Interaction, amount: int):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    if amount < 1:
-        await interaction.response.send_message("❌ Must be at least 1", ephemeral=True)
-        return
-    data = get_user(str(interaction.user.id))
-    if data['balance'] < amount:
-        await interaction.response.send_message("❌ Not enough coins", ephemeral=True)
-        return
-    multiplier = random.choice([0, 0, 0, 0.5, 1, 1.5, 2, 3, 5, 10])
-    if multiplier == 0:
-        data['balance'] -= amount
-        await interaction.response.send_message(f"😔 Lost {amount} coins")
-    else:
-        winnings = int(amount * multiplier)
-        data['balance'] += winnings
-        if multiplier >= 5:
-            await interaction.response.send_message(f"🎉 JACKPOT! Won {winnings} coins ({multiplier}x)")
-        else:
-            await interaction.response.send_message(f"🎉 Won {winnings} coins ({multiplier}x)")
-
-@tree.command(name="steal", description="Steal from another user")
-async def steal(interaction: discord.Interaction, target: discord.Member):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    if target == interaction.user:
-        await interaction.response.send_message("❌ Can't steal from yourself", ephemeral=True)
-        return
-    if target.bot:
-        await interaction.response.send_message("❌ Can't steal from a bot", ephemeral=True)
-        return
-    target_data = get_user(str(target.id))
-    if target_data['balance'] < 10:
-        await interaction.response.send_message(f"❌ {target.mention} is too poor", ephemeral=True)
-        return
-    user_data = get_user(str(interaction.user.id))
-    if random.random() < 0.4:
-        amount = random.randint(1, min(50, target_data['balance']))
-        target_data['balance'] -= amount
-        user_data['balance'] += amount
-        await interaction.response.send_message(f"💰 You stole **{amount}** coins from {target.mention} 😈")
-    else:
-        penalty = random.randint(5, 20)
-        user_data['balance'] = max(0, user_data['balance'] - penalty)
-        await interaction.response.send_message(f"❌ You got caught! Paid **{penalty}** coins fine")
-
-@tree.command(name="give", description="Give coins to someone")
-async def give(interaction: discord.Interaction, target: discord.Member, amount: int):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    if target == interaction.user:
-        await interaction.response.send_message("❌ Can't give to yourself", ephemeral=True)
-        return
-    if amount < 1:
-        await interaction.response.send_message("❌ Amount must be positive", ephemeral=True)
-        return
-    user_data = get_user(str(interaction.user.id))
-    if user_data['balance'] < amount:
-        await interaction.response.send_message("❌ Not enough coins", ephemeral=True)
-        return
-    target_data = get_user(str(target.id))
-    user_data['balance'] -= amount
-    target_data['balance'] += amount
-    await interaction.response.send_message(f"✅ Gave **{amount}** coins to {target.mention}")
-
-# ==================== MODERATION COMMANDS ====================
+# MODERATION
 @tree.command(name="kick", description="Kick a member")
 @app_commands.default_permissions(kick_members=True)
 async def kick(interaction: discord.Interaction, member: discord.Member, reason: str = "No reason"):
@@ -844,46 +570,6 @@ async def clear(interaction: discord.Interaction, amount: int):
     deleted = await interaction.channel.purge(limit=amount)
     await interaction.response.send_message(f"🗑️ Deleted {len(deleted)} messages", ephemeral=True)
 
-@tree.command(name="timeout", description="Timeout a member")
-@app_commands.default_permissions(moderate_members=True)
-async def timeout(interaction: discord.Interaction, member: discord.Member, minutes: int, reason: str = "No reason"):
-    if not (is_mod(interaction) or is_staff(interaction) or is_founder(interaction)):
-        await interaction.response.send_message("❌ You need MOD role or higher!", ephemeral=True)
-        return
-    if minutes < 1 or minutes > 40320:
-        await interaction.response.send_message("❌ 1-40320 minutes", ephemeral=True)
-        return
-    await member.timeout(datetime.timedelta(minutes=minutes), reason=reason)
-    await interaction.response.send_message(f"⏰ {member.mention} timed out for {minutes} minutes")
-
-@tree.command(name="warn", description="Warn a member")
-@app_commands.default_permissions(kick_members=True)
-async def warn(interaction: discord.Interaction, member: discord.Member, reason: str):
-    if not (is_mod(interaction) or is_staff(interaction) or is_founder(interaction)):
-        await interaction.response.send_message("❌ You need MOD role or higher!", ephemeral=True)
-        return
-    user_id = str(member.id)
-    if user_id not in warnings:
-        warnings[user_id] = []
-    warnings[user_id].append({"reason": reason, "mod": str(interaction.user), "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M")})
-    await interaction.response.send_message(f"⚠️ {member.mention} warned\nReason: {reason}\nTotal warnings: {len(warnings[user_id])}")
-
-@tree.command(name="warnings", description="Check warnings")
-@app_commands.default_permissions(kick_members=True)
-async def warnings_cmd(interaction: discord.Interaction, member: discord.Member):
-    if not (is_mod(interaction) or is_staff(interaction) or is_founder(interaction)):
-        await interaction.response.send_message("❌ You need MOD role or higher!", ephemeral=True)
-        return
-    user_id = str(member.id)
-    if user_id not in warnings or not warnings[user_id]:
-        await interaction.response.send_message(f"✅ {member.mention} has no warnings")
-        return
-    embed = discord.Embed(title=f"⚠️ Warnings for {member.name}", color=discord.Color.orange())
-    for i, w in enumerate(warnings[user_id][:10], 1):
-        embed.add_field(name=f"#{i}", value=f"Reason: {w['reason']}\nMod: {w['mod']}\nTime: {w['time']}", inline=False)
-    embed.set_footer(text=f"Total: {len(warnings[user_id])} warnings")
-    await interaction.response.send_message(embed=embed)
-
 # ==================== LEVELING ====================
 @bot.event
 async def on_message(message):
@@ -904,12 +590,9 @@ async def level(interaction: discord.Interaction, member: discord.Member = None)
     exp = levels.get(str(member.id), 0)
     lvl = int((exp ** 0.5) / 2) + 1
     next_exp = ((lvl + 1) * 2) ** 2
-    progress = exp - ((lvl * 2) ** 2)
-    needed = next_exp - ((lvl * 2) ** 2)
     embed = discord.Embed(title=f"📊 {member.name}", color=discord.Color.blue())
     embed.add_field(name="Level", value=lvl, inline=True)
     embed.add_field(name="EXP", value=f"{exp} / {next_exp}", inline=True)
-    embed.add_field(name="Progress", value=f"{int(progress/needed*100)}%", inline=True)
     await interaction.response.send_message(embed=embed)
 
 @tree.command(name="leaderboard", description="Top 10 levels")
@@ -929,7 +612,7 @@ async def leaderboard(interaction: discord.Interaction):
         embed.add_field(name=f"#{i} {name}", value=f"Level {lvl} | {exp} EXP", inline=False)
     await interaction.response.send_message(embed=embed)
 
-# ==================== UTILITY COMMANDS ====================
+# ==================== UTILITY ====================
 @tree.command(name="time", description="Current time")
 async def time(interaction: discord.Interaction):
     if not has_minimum_role(interaction):
@@ -965,37 +648,7 @@ async def invite(interaction: discord.Interaction):
     url = f"https://discord.com/oauth2/authorize?client_id={bot.user.id}&permissions=8&scope=bot%20applications.commands"
     await interaction.response.send_message(f"📩 [Invite me]({url})")
 
-@tree.command(name="weather", description="Weather for a city")
-async def weather(interaction: discord.Interaction, city: str):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    try:
-        resp = requests.get(f"https://wttr.in/{city}?format=%C+%t+%w")
-        if resp.status_code == 200:
-            await interaction.response.send_message(f"🌤️ **{city}**: {resp.text}")
-        else:
-            await interaction.response.send_message("❌ Could not fetch weather")
-    except:
-        await interaction.response.send_message("❌ API error")
-
-@tree.command(name="translate", description="Translate text")
-async def translate(interaction: discord.Interaction, text: str, language: str = "en"):
-    if not has_minimum_role(interaction):
-        await interaction.response.send_message("❌ You need VERIFIED role or higher!", ephemeral=True)
-        return
-    try:
-        url = f"https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl={language}&dt=t&q={text}"
-        resp = requests.get(url)
-        if resp.status_code == 200:
-            translated = resp.json()[0][0][0]
-            await interaction.response.send_message(f"🌐 **Translation**: {translated}")
-        else:
-            await interaction.response.send_message("❌ Translation failed")
-    except:
-        await interaction.response.send_message("❌ API error")
-
-# ==================== ADMIN COMMANDS ====================
+# ==================== ADMIN ====================
 @tree.command(name="setbalance", description="[Admin] Set a user's balance")
 async def setbalance(interaction: discord.Interaction, member: discord.Member, amount: int):
     if not (is_staff(interaction) or is_founder(interaction)):
@@ -1014,15 +667,6 @@ async def addcoins(interaction: discord.Interaction, member: discord.Member, amo
     data['balance'] += amount
     await interaction.response.send_message(f"✅ Added {amount} coins to {member.mention}")
 
-@tree.command(name="removecoins", description="[Admin] Remove coins from a user")
-async def removecoins(interaction: discord.Interaction, member: discord.Member, amount: int):
-    if not (is_staff(interaction) or is_founder(interaction)):
-        await interaction.response.send_message("❌ You need STAFF role or higher!", ephemeral=True)
-        return
-    data = get_user(str(member.id))
-    data['balance'] = max(0, data['balance'] - amount)
-    await interaction.response.send_message(f"✅ Removed {amount} coins from {member.mention}")
-
 @tree.command(name="resetbalance", description="[Admin] Reset a user's balance to 100")
 async def resetbalance(interaction: discord.Interaction, member: discord.Member):
     if not (is_staff(interaction) or is_founder(interaction)):
@@ -1032,37 +676,7 @@ async def resetbalance(interaction: discord.Interaction, member: discord.Member)
     data['balance'] = 100
     await interaction.response.send_message(f"✅ {member.mention}'s balance reset to 100 coins")
 
-@tree.command(name="resetwarnings", description="[Admin] Clear all warnings for a user")
-async def resetwarnings(interaction: discord.Interaction, member: discord.Member):
-    if not (is_staff(interaction) or is_founder(interaction)):
-        await interaction.response.send_message("❌ You need STAFF role or higher!", ephemeral=True)
-        return
-    uid = str(member.id)
-    if uid in warnings:
-        warnings[uid] = []
-    await interaction.response.send_message(f"✅ All warnings removed for {member.mention}")
-
-@tree.command(name="addxp", description="[Admin] Add XP to a user")
-async def addxp(interaction: discord.Interaction, member: discord.Member, amount: int):
-    if not (is_staff(interaction) or is_founder(interaction)):
-        await interaction.response.send_message("❌ You need STAFF role or higher!", ephemeral=True)
-        return
-    uid = str(member.id)
-    if uid not in levels:
-        levels[uid] = 0
-    levels[uid] += amount
-    await interaction.response.send_message(f"✅ Added {amount} XP to {member.mention}")
-
-@tree.command(name="setlevel", description="[Admin] Set a user's level")
-async def setlevel(interaction: discord.Interaction, member: discord.Member, level: int):
-    if not (is_staff(interaction) or is_founder(interaction)):
-        await interaction.response.send_message("❌ You need STAFF role or higher!", ephemeral=True)
-        return
-    uid = str(member.id)
-    levels[uid] = (level * 2) ** 2
-    await interaction.response.send_message(f"✅ Set {member.mention}'s level to {level}")
-
-# ==================== OWNER COMMANDS ====================
+# ==================== OWNER ====================
 @tree.command(name="serverlist", description="[Owner] List all servers the bot is in")
 async def serverlist(interaction: discord.Interaction):
     if not is_founder(interaction):
@@ -1078,82 +692,6 @@ async def serverlist(interaction: discord.Interaction):
     embed = discord.Embed(title=f"📊 Servers ({len(bot.guilds)})", color=discord.Color.blue())
     embed.add_field(name="Servers", value=server_list or "No servers", inline=False)
     await interaction.response.send_message(embed=embed)
-
-@tree.command(name="leaveserver", description="[Owner] Make the bot leave a server")
-async def leaveserver(interaction: discord.Interaction, server_id: str):
-    if not is_founder(interaction):
-        await interaction.response.send_message("❌ Only the FOUNDER can use this!", ephemeral=True)
-        return
-    
-    guild = bot.get_guild(int(server_id))
-    if guild:
-        await guild.leave()
-        await interaction.response.send_message(f"✅ Left server: {guild.name}")
-    else:
-        await interaction.response.send_message("❌ Server not found or bot not in it")
-
-@tree.command(name="broadcast", description="[Owner] Send a message to all servers")
-async def broadcast(interaction: discord.Interaction, message: str):
-    if not is_founder(interaction):
-        await interaction.response.send_message("❌ Only the FOUNDER can use this!", ephemeral=True)
-        return
-    
-    sent = 0
-    for guild in bot.guilds:
-        try:
-            channel = guild.system_channel or guild.text_channels[0]
-            await channel.send(f"📢 **Announcement from Owner:**\n{message}")
-            sent += 1
-            await asyncio.sleep(0.5)
-        except:
-            pass
-    
-    await interaction.response.send_message(f"✅ Broadcast sent to {sent} servers!")
-
-@tree.command(name="exportdata", description="[Owner] Export all bot data")
-async def exportdata(interaction: discord.Interaction):
-    if not is_founder(interaction):
-        await interaction.response.send_message("❌ Only the FOUNDER can use this!", ephemeral=True)
-        return
-    
-    data = {
-        "economy": economy,
-        "levels": levels,
-        "warnings": warnings,
-        "marriage": marriage,
-        "pets": pets,
-        "inventory": inventory,
-        "achievements": achievements,
-        "blacklist": blacklist
-    }
-    
-    with open("bot_data.json", "w") as f:
-        json.dump(data, f, indent=4)
-    
-    await interaction.response.send_message("✅ Data exported!", ephemeral=True)
-
-@tree.command(name="importdata", description="[Owner] Import bot data from JSON")
-async def importdata(interaction: discord.Interaction):
-    if not is_founder(interaction):
-        await interaction.response.send_message("❌ Only the FOUNDER can use this!", ephemeral=True)
-        return
-    
-    try:
-        with open("bot_data.json", "r") as f:
-            data = json.load(f)
-        
-        economy.update(data.get("economy", {}))
-        levels.update(data.get("levels", {}))
-        warnings.update(data.get("warnings", {}))
-        marriage.update(data.get("marriage", {}))
-        pets.update(data.get("pets", {}))
-        inventory.update(data.get("inventory", {}))
-        achievements.update(data.get("achievements", {}))
-        blacklist.update(data.get("blacklist", {}))
-        
-        await interaction.response.send_message("✅ Data imported successfully!", ephemeral=True)
-    except:
-        await interaction.response.send_message("❌ No data file found or invalid format!", ephemeral=True)
 
 @tree.command(name="restart", description="[Owner] Restart the bot")
 async def restart(interaction: discord.Interaction):
@@ -1173,15 +711,6 @@ async def shutdown(interaction: discord.Interaction):
     
     await interaction.response.send_message("🛑 Shutting down...")
     await bot.close()
-
-@tree.command(name="status", description="[Owner] Change bot status")
-async def status(interaction: discord.Interaction, status: str):
-    if not is_founder(interaction):
-        await interaction.response.send_message("❌ Only the FOUNDER can use this!", ephemeral=True)
-        return
-    
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=status))
-    await interaction.response.send_message(f"✅ Status changed to: **{status}**")
 
 # ==================== ERROR HANDLING ====================
 @tree.error
